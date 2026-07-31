@@ -84,21 +84,26 @@ def get_movie_answer(user_message):
         The user asked: "{user_message}"
         The movie being discussed: "{movie_name}"
 
-        The following are REAL reviews written by actual audience members, scraped live from the internet:
+        ⚠️ IMPORTANT: This movie may be a VERY RECENT RELEASE (last few weeks or months).
+        The following content was scraped LIVE from review websites RIGHT NOW — it is the most
+        up-to-date information available. Treat this as ground truth, even if it differs from
+        or supplements your training data:
+
         {reviews_text}
 
-        Using both the real audience reviews above AND your expert knowledge, write a detailed, enthusiastic response covering:
-        - 🎬 **Movie Title** | **Industry / Language**
-        - 🎭 **Cast & Director**
-        - 💰 **Budget & Box Office** — state clearly if it was a Hit, Blockbuster, Average, or Flop
-        - ⭐ **Ratings** (IMDB, Rotten Tomatoes, or similar)
-        - 📝 **Real Audience Sentiment** — summarize what real viewers actually said (reference the reviews above, mentioning sources like Letterboxd or BookMyShow naturally)
-        - 💬 **Expert Consensus** — your overall expert take
-        - 🏆 **Notable Awards** (if any)
+        Using the live review data above as your PRIMARY source, write a detailed response covering:
+        - 🎬 **Movie Title** | **Industry / Language** | **Release Year**
+        - 🎭 **Cast & Director** (use names from the reviews if your training data doesn't cover this film)
+        - 💰 **Budget & Box Office** — state clearly: Hit, Blockbuster, Average, or Flop (say 'data not yet available' if unknown)
+        - ⭐ **Ratings** — cite the rating from the scraped reviews (e.g. '3.25/5 by 123telugu.com')
+        - 📝 **What Critics & Audiences Are Saying** — summarize the scraped reviews naturally, mentioning sources like '123telugu.com' or 'GreatAndhra'
+        - ✅ **Highlights / Plus Points** — extract from the reviews
+        - ❌ **Weak Points** — extract from the reviews
+        - 💬 **Overall Verdict**
 
         Format beautifully using markdown bold headers, bullet points, and emojis.
-        Present audience feedback naturally as if you read what people are saying online.
-        Do NOT mention scraping, JSON, or APIs.
+        If this is a very new release, acknowledge that naturally (e.g. 'just released this week').
+        Do NOT mention scraping, APIs, or JSON. Do NOT fabricate cast/crew/ratings not in the data.
         """
     else:
         # Fallback: rely on Groq's knowledge alone
@@ -107,12 +112,19 @@ def get_movie_answer(user_message):
         Hollywood, Bollywood, Telugu (Tollywood), Tamil (Kollywood), Malayalam (Mollywood), Kannada, and more.
 
         The user asked: "{user_message}"
+        The movie identified: "{movie_name}"
 
-        Provide a detailed and enthusiastic review covering:
-        - 🎬 **Movie Title** | **Industry / Language**
+        ⚠️ NOTE: Live review data could not be fetched for this movie right now.
+        If this movie is a VERY RECENT RELEASE (past few weeks) that you don't have training data on,
+        be honest and say: "This appears to be a very recent release that I don't have detailed
+        information on yet. Here's what I know so far..." and share only what you're confident about.
+        Do NOT hallucinate cast, ratings, plot, or box office figures you don't actually know.
+
+        If you DO have knowledge of this film, provide a detailed response covering:
+        - 🎬 **Movie Title** | **Industry / Language** | **Release Year**
         - 🎭 **Cast & Director**
-        - 💰 **Budget & Box Office** — state clearly if it was a Hit, Blockbuster, Average, or Flop
-        - ⭐ **Ratings**
+        - 💰 **Budget & Box Office** — Hit, Blockbuster, Average, or Flop
+        - ⭐ **Ratings** (IMDB, critics, etc.)
         - 📝 **Audience & Critic Consensus**
         - 🏆 **Notable Awards** (if any)
         - 💬 **Expert Take**
