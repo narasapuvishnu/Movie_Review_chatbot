@@ -97,7 +97,7 @@ def get_movie_answer(user_message):
         - 🎭 **Cast & Director** (use names from the reviews if your training data doesn't cover this film)
         - 💰 **Budget & Box Office** — state clearly: Hit, Blockbuster, Average, or Flop (say 'data not yet available' if unknown)
         - ⭐ **Ratings** — cite the rating from the scraped reviews (e.g. '3.25/5 by 123telugu.com')
-        - 📝 **What Critics & Audiences Are Saying** — summarize the scraped reviews naturally, mentioning sources like '123telugu.com' or 'GreatAndhra'
+        - 📝 **What Critics & Audiences Are Saying** — summarize the scraped reviews naturally. ⚠️ CRITICAL: If the reviews mention different language versions (e.g., Hindi version, Telugu version), you MUST separate the reviews and audience reception by language. Do NOT combine them.
         - ✅ **Highlights / Plus Points** — extract from the reviews
         - ❌ **Weak Points** — extract from the reviews
         - 💬 **Overall Verdict**
