@@ -85,18 +85,14 @@ def get_movie_answer(user_message):
         The user asked: "{user_message}"
         The movie being discussed: "{movie_name}"
 
-        ⚠️ CRITICAL VERIFICATION STEP:
-        The following content was scraped LIVE from a review website based on a keyword search.
-        Sometimes, search results return articles about completely DIFFERENT movies (for example, if the requested movie's name matches a song or character in another film).
-        First, carefully read the scraped data and verify if it is ACTUALLY about the movie "{movie_name}".
-        If the scraped data is about a completely different movie, you MUST IGNORE the scraped data entirely and rely solely on your own training data to answer about "{movie_name}".
-        If the scraped data DOES match the requested movie "{movie_name}", treat it as ground truth and use it as your PRIMARY source.
+        ⚠️ IMPORTANT: This movie may be a VERY RECENT RELEASE (last few weeks or months).
+        The following content was scraped LIVE from review websites RIGHT NOW — it is the most
+        up-to-date information available. Treat this as ground truth, even if it differs from
+        or supplements your training data:
 
-        [Scraped Data Begins]
         {reviews_text}
-        [Scraped Data Ends]
 
-        Using the logic above, write a detailed response covering:
+        Using the live review data above as your PRIMARY source, write a detailed response covering:
         - 🎬 **Movie Title** | **Industry / Language** | **Release Year**
         - 🎭 **Cast & Director** (use names from the reviews if your training data doesn't cover this film)
         - 💰 **Budget & Box Office** — state clearly: Hit, Blockbuster, Average, or Flop (say 'data not yet available' if unknown)
