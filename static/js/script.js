@@ -111,6 +111,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const bubble = document.createElement('div');
         bubble.classList.add('typing-bubble');
         bubble.innerHTML = `
+            <div class="typing-status" style="font-size: 0.85rem; color: var(--gold); margin-bottom: 6px; font-weight: 500;">Researching movie...</div>
             <div class="typing-dots">
                 <div class="typing-dot"></div>
                 <div class="typing-dot"></div>
