@@ -42,12 +42,16 @@ def scrape_123telugu_rss(movie_name):
                 if link in seen_links:
                     continue
                 
-                # Check if the article title is actually relevant to the movie
+                # Check if the article title is actually a review for the movie
                 movie_words = [w.lower() for w in movie_name.split() if len(w) > 2]
                 if not movie_words:
                     movie_words = [movie_name.lower()]
                 
-                if not any(w in title.lower() for w in movie_words):
+                title_lower = title.lower()
+                has_movie_name = any(w in title_lower for w in movie_words)
+                has_review_keyword = "review" in title_lower
+                
+                if not (has_movie_name and has_review_keyword):
                     print(f"  -> Skipping irrelevant article: {title}")
                     continue
                     
