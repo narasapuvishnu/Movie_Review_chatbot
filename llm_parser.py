@@ -27,7 +27,7 @@ def extract_movie_name(user_message):
     try:
         completion = client.chat.completions.create(
             messages=[{"role": "user", "content": prompt}],
-            model="llama-3.3-70b-versatile",
+            model="llama-3.1-8b-instant",
             temperature=0.0,
             max_tokens=30
         )
@@ -60,7 +60,7 @@ def get_movie_answer(user_message):
                     User said: "{user_message}"
                     Respond warmly and conversationally. Let them know you can help with any movie from any industry.
                 """}],
-                model="llama-3.3-70b-versatile",
+                model="llama-3.1-8b-instant",
                 temperature=0.7,
                 max_tokens=400
             )
@@ -137,11 +137,11 @@ def get_movie_answer(user_message):
     try:
         completion = client.chat.completions.create(
             messages=[{"role": "user", "content": final_prompt}],
-            model="llama-3.3-70b-versatile",
+            model="llama-3.1-8b-instant",
             temperature=0.7,
             max_tokens=1200
         )
         return completion.choices[0].message.content
     except Exception as e:
         print(f"[Final] Error: {e}")
-        return "I'm having trouble processing that right now. Please try again in a moment."
+        return f"I'm having trouble processing that right now. Please try again in a moment. Error details: {str(e)}"
