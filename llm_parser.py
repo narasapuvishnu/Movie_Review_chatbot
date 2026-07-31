@@ -18,10 +18,11 @@ def extract_movie_name(user_message):
     if not client:
         return None
     prompt = f"""
-    You are an intent extraction bot. The user said: "{user_message}"
-    If they are asking about a specific movie, reply ONLY with the exact name of that movie. 
-    Do not add any year, punctuation, language tag, or conversational text.
-    If they are NOT asking about a specific movie, reply ONLY with the word: NONE.
+    You are a highly accurate intent extraction bot. The user said: "{user_message}"
+    If the user is asking for a review, rating, or information about a specific movie (even if it's a regional or upcoming movie like 'Peddi', 'Kalki', etc.), extract the exact movie name.
+    If they mention actors (like Ram Charan, Prabhas) along with a movie name, just extract the movie name.
+    Reply ONLY with the exact name of the movie. Do not add any year, punctuation, language tag, or conversational text.
+    If they are definitively NOT asking about a specific movie, reply ONLY with the word: NONE.
     """
     try:
         completion = client.chat.completions.create(
