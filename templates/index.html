@@ -3,44 +3,147 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CineBot - AI Movie Assistant</title>
+    <meta name="description" content="CineBot - Your AI-powered movie assistant for reviews, cast, box office, and more for all world cinema.">
+    <title>CineBot — AI Movie Assistant</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
-    <!-- Marked.js for parsing markdown in bot responses -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 </head>
 <body>
-    <div class="chat-container">
-        <header class="chat-header">
-            <div class="logo">
-                <span class="bot-icon">🎬</span>
-                <div class="title-container">
-                    <h1>CineBot</h1>
-                    <p>Your AI Movie Expert</p>
-                </div>
-            </div>
-            <div class="status">
-                <span class="status-dot"></span> Online
-            </div>
-        </header>
 
-        <main class="chat-box" id="chat-box">
-            <div class="message bot">
-                <div class="avatar">🎬</div>
-                <div class="bubble">
-                    <p>Hello! I'm CineBot. Ask me about any movie's budget, reviews, cast, or whether it was a hit or flop! 🍿</p>
+    <!-- Animated cinematic background -->
+    <div class="bg-orbs">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="orb orb-3"></div>
+    </div>
+    <div class="film-strip film-strip-top"></div>
+    <div class="film-strip film-strip-bottom"></div>
+
+    <div class="app-shell">
+
+        <!-- ── Sidebar ─────────────────────────────── -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-brand">
+                <span class="brand-icon">🎬</span>
+                <span class="brand-name">CineBot</span>
+            </div>
+
+            <nav class="sidebar-nav">
+                <p class="nav-label">Explore</p>
+                <ul>
+                    <li class="nav-item active" data-q="Tell me about a recent Telugu blockbuster">
+                        <span>🌟</span> Telugu Cinema
+                    </li>
+                    <li class="nav-item" data-q="Give me a review of a top Bollywood hit">
+                        <span>🎭</span> Bollywood
+                    </li>
+                    <li class="nav-item" data-q="What is a popular Tamil movie recently?">
+                        <span>🎵</span> Kollywood
+                    </li>
+                    <li class="nav-item" data-q="Tell me about a top Hollywood blockbuster">
+                        <span>🌎</span> Hollywood
+                    </li>
+                    <li class="nav-item" data-q="What are some popular Malayalam movies?">
+                        <span>🏆</span> Mollywood
+                    </li>
+                </ul>
+
+                <p class="nav-label">Quick Reviews</p>
+                <ul>
+                    <li class="nav-item" data-q="Review of RRR movie">
+                        <span>🔥</span> RRR
+                    </li>
+                    <li class="nav-item" data-q="Review of Baahubali">
+                        <span>⚔️</span> Baahubali
+                    </li>
+                    <li class="nav-item" data-q="Review of Inception">
+                        <span>🌀</span> Inception
+                    </li>
+                    <li class="nav-item" data-q="Review of Pushpa The Rise">
+                        <span>🌿</span> Pushpa
+                    </li>
+                </ul>
+            </nav>
+
+            <div class="sidebar-footer">
+                <p>Powered by</p>
+                <span>Groq · Letterboxd · BMS</span>
+            </div>
+        </aside>
+
+        <!-- ── Main Chat ───────────────────────────── -->
+        <main class="chat-panel">
+
+            <!-- Header -->
+            <header class="chat-header">
+                <button class="sidebar-toggle" id="sidebar-toggle" aria-label="Toggle Sidebar">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                        <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+                    </svg>
+                </button>
+                <div class="header-identity">
+                    <div class="header-avatar">🎬</div>
+                    <div>
+                        <h1 class="header-title">CineBot</h1>
+                        <p class="header-subtitle">AI Movie Expert • All Cinemas</p>
+                    </div>
+                </div>
+                <div class="header-status">
+                    <span class="status-dot"></span>
+                    <span>Live</span>
+                </div>
+            </header>
+
+            <!-- Chat messages area -->
+            <div class="chat-box" id="chat-box">
+                <!-- Welcome message -->
+                <div class="message bot">
+                    <div class="msg-avatar bot-avatar">🎬</div>
+                    <div class="msg-content">
+                        <div class="msg-name">CineBot</div>
+                        <div class="bubble bot-bubble">
+                            <p>🍿 Welcome! I'm <strong>CineBot</strong>, your AI-powered movie assistant.</p>
+                            <p>Ask me about <strong>any movie</strong> — Telugu, Tamil, Hindi, Malayalam, Hollywood, and more. I'll fetch real audience reviews and give you the full breakdown!</p>
+                        </div>
+                        <div class="msg-time" id="welcome-time"></div>
+                    </div>
+                </div>
+
+                <!-- Quick suggestion chips -->
+                <div class="suggestions" id="suggestions">
+                    <button class="chip" data-q="Review of RRR movie">🔥 RRR Review</button>
+                    <button class="chip" data-q="Was Pushpa a hit or flop?">🌿 Pushpa Hit/Flop</button>
+                    <button class="chip" data-q="Tell me about Baahubali">⚔️ Baahubali</button>
+                    <button class="chip" data-q="Review of Oppenheimer">💥 Oppenheimer</button>
+                    <button class="chip" data-q="Latest blockbuster movies 2024">🌟 2024 Hits</button>
                 </div>
             </div>
+
+            <!-- Input area -->
+            <footer class="input-area">
+                <div class="input-wrapper">
+                    <span class="input-icon">🎬</span>
+                    <input
+                        type="text"
+                        id="user-input"
+                        placeholder="Ask about any movie — 'Review of Kalki 2898 AD'..."
+                        autocomplete="off"
+                        aria-label="Movie query input"
+                    >
+                    <button id="send-btn" aria-label="Send Message">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="22" y1="2" x2="11" y2="13"></line>
+                            <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                        </svg>
+                    </button>
+                </div>
+                <p class="input-hint">Powered by Groq AI + Live Audience Reviews from Letterboxd & BookMyShow</p>
+            </footer>
+
         </main>
-
-        <footer class="chat-input-area">
-            <input type="text" id="user-input" placeholder="e.g. Was Avatar a hit or flop?..." autocomplete="off">
-            <button id="send-btn" aria-label="Send Message">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
-            </button>
-        </footer>
     </div>
 
     <script src="{{ url_for('static', filename='js/script.js') }}"></script>

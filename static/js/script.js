@@ -1,115 +1,159 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const chatBox = document.getElementById('chat-box');
+    const chatBox   = document.getElementById('chat-box');
     const userInput = document.getElementById('user-input');
-    const sendBtn = document.getElementById('send-btn');
+    const sendBtn   = document.getElementById('send-btn');
+    const sidebarToggle = document.getElementById('sidebar-toggle');
+    const sidebar   = document.getElementById('sidebar');
 
-    // Parse markdown configuring marked to be safer
-    marked.setOptions({
-        breaks: true,
-        gfm: true
+    // Set welcome timestamp
+    const welcomeTime = document.getElementById('welcome-time');
+    if (welcomeTime) welcomeTime.textContent = getTime();
+
+    // Marked.js options
+    marked.setOptions({ breaks: true, gfm: true });
+
+    // ── Sidebar toggle ────────────────────────────────────
+    sidebarToggle.addEventListener('click', () => {
+        sidebar.classList.toggle('collapsed');
     });
 
-    function scrollToBottom() {
-        chatBox.scrollTo({
-            top: chatBox.scrollHeight,
-            behavior: 'smooth'
+    // ── Sidebar nav items ─────────────────────────────────
+    document.querySelectorAll('.nav-item').forEach(item => {
+        item.addEventListener('click', () => {
+            document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+            item.classList.add('active');
+            const q = item.getAttribute('data-q');
+            if (q) sendQuery(q);
         });
+    });
+
+    // ── Suggestion chips ──────────────────────────────────
+    document.querySelectorAll('.chip').forEach(chip => {
+        chip.addEventListener('click', () => {
+            const q = chip.getAttribute('data-q');
+            if (q) {
+                hideSuggestions();
+                sendQuery(q);
+            }
+        });
+    });
+
+    function hideSuggestions() {
+        const s = document.getElementById('suggestions');
+        if (s) { s.style.transition = 'opacity 0.3s'; s.style.opacity = '0'; setTimeout(() => s.remove(), 300); }
     }
 
-    function addMessage(content, sender) {
-        const messageDiv = document.createElement('div');
-        messageDiv.classList.add('message', sender);
-        
-        const avatarDiv = document.createElement('div');
-        avatarDiv.classList.add('avatar');
-        avatarDiv.innerHTML = sender === 'user' ? '👤' : '🎬';
+    // ── Helpers ───────────────────────────────────────────
+    function getTime() {
+        return new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    }
 
-        const bubbleDiv = document.createElement('div');
-        bubbleDiv.classList.add('bubble');
-        
+    function scrollToBottom() {
+        chatBox.scrollTo({ top: chatBox.scrollHeight, behavior: 'smooth' });
+    }
+
+    // ── Add message ───────────────────────────────────────
+    function addMessage(content, sender) {
+        const wrapper = document.createElement('div');
+        wrapper.classList.add('message', sender);
+
+        const avatar = document.createElement('div');
+        avatar.classList.add('msg-avatar', sender === 'bot' ? 'bot-avatar' : 'user-avatar');
+        avatar.textContent = sender === 'bot' ? '🎬' : '👤';
+
+        const msgContent = document.createElement('div');
+        msgContent.classList.add('msg-content');
+
+        const name = document.createElement('div');
+        name.classList.add('msg-name');
+        name.textContent = sender === 'bot' ? 'CineBot' : 'You';
+
+        const bubble = document.createElement('div');
+        bubble.classList.add('bubble', sender === 'bot' ? 'bot-bubble' : 'user-bubble');
+
         if (sender === 'bot') {
-            bubbleDiv.innerHTML = marked.parse(content);
+            bubble.innerHTML = marked.parse(content);
         } else {
-            const p = document.createElement('p');
-            p.textContent = content;
-            bubbleDiv.appendChild(p);
+            bubble.textContent = content;
         }
 
-        messageDiv.appendChild(avatarDiv);
-        messageDiv.appendChild(bubbleDiv);
-        
-        chatBox.appendChild(messageDiv);
+        const time = document.createElement('div');
+        time.classList.add('msg-time');
+        time.textContent = getTime();
+
+        msgContent.appendChild(name);
+        msgContent.appendChild(bubble);
+        msgContent.appendChild(time);
+
+        wrapper.appendChild(avatar);
+        wrapper.appendChild(msgContent);
+        chatBox.appendChild(wrapper);
         scrollToBottom();
     }
 
-    function addTypingIndicator() {
-        const messageDiv = document.createElement('div');
-        messageDiv.classList.add('message', 'bot');
-        messageDiv.id = 'typing-indicator-msg';
-        
-        const avatarDiv = document.createElement('div');
-        avatarDiv.classList.add('avatar');
-        avatarDiv.innerHTML = '🎬';
+    // ── Typing indicator ──────────────────────────────────
+    function showTyping() {
+        const wrapper = document.createElement('div');
+        wrapper.classList.add('message', 'bot');
+        wrapper.id = 'typing-msg';
 
-        const bubbleDiv = document.createElement('div');
-        bubbleDiv.classList.add('bubble', 'typing-indicator');
-        bubbleDiv.innerHTML = `
-            <div class="typing-dot"></div>
-            <div class="typing-dot"></div>
-            <div class="typing-dot"></div>
+        const avatar = document.createElement('div');
+        avatar.classList.add('msg-avatar', 'bot-avatar');
+        avatar.textContent = '🎬';
+
+        const msgContent = document.createElement('div');
+        msgContent.classList.add('msg-content');
+
+        const name = document.createElement('div');
+        name.classList.add('msg-name');
+        name.textContent = 'CineBot';
+
+        const bubble = document.createElement('div');
+        bubble.classList.add('typing-bubble');
+        bubble.innerHTML = `
+            <div class="typing-dots">
+                <div class="typing-dot"></div>
+                <div class="typing-dot"></div>
+                <div class="typing-dot"></div>
+            </div>
         `;
 
-        messageDiv.appendChild(avatarDiv);
-        messageDiv.appendChild(bubbleDiv);
-        
-        chatBox.appendChild(messageDiv);
+        msgContent.appendChild(name);
+        msgContent.appendChild(bubble);
+        wrapper.appendChild(avatar);
+        wrapper.appendChild(msgContent);
+        chatBox.appendChild(wrapper);
         scrollToBottom();
     }
 
-    function removeTypingIndicator() {
-        const indicator = document.getElementById('typing-indicator-msg');
-        if (indicator) {
-            indicator.remove();
-        }
+    function hideTyping() {
+        const el = document.getElementById('typing-msg');
+        if (el) el.remove();
     }
 
-    async function sendMessage() {
-        const message = userInput.value.trim();
-        if (!message) return;
-
-        // Add user message to UI
-        addMessage(message, 'user');
+    // ── Send message ──────────────────────────────────────
+    async function sendQuery(query) {
+        hideSuggestions();
+        addMessage(query, 'user');
         userInput.value = '';
-        
-        // Disable input while processing
+
         userInput.disabled = true;
         sendBtn.disabled = true;
-
-        // Show typing indicator
-        addTypingIndicator();
+        showTyping();
 
         try {
-            const response = await fetch('/chat', {
+            const res = await fetch('/chat', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ message })
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ message: query })
             });
-            
-            const data = await response.json();
-            
-            removeTypingIndicator();
-            
-            if (response.ok) {
-                addMessage(data.response, 'bot');
-            } else {
-                addMessage("Oops! Something went wrong communicating with the server.", 'bot');
-            }
-        } catch (error) {
-            console.error('Error:', error);
-            removeTypingIndicator();
-            addMessage("Oops! Network error. Please try again.", 'bot');
+            const data = await res.json();
+            hideTyping();
+            addMessage(res.ok ? data.response : 'Oops! Something went wrong. Please try again.', 'bot');
+        } catch (err) {
+            console.error(err);
+            hideTyping();
+            addMessage('Network error. Please check your connection and try again.', 'bot');
         } finally {
             userInput.disabled = false;
             sendBtn.disabled = false;
@@ -117,11 +161,21 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    sendBtn.addEventListener('click', sendMessage);
+    async function sendMessage() {
+        const msg = userInput.value.trim();
+        if (!msg) return;
+        await sendQuery(msg);
+    }
 
-    userInput.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') {
+    // ── Event listeners ───────────────────────────────────
+    sendBtn.addEventListener('click', sendMessage);
+    userInput.addEventListener('keydown', e => {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
             sendMessage();
         }
     });
+
+    // ── Auto-focus ─────────────────────────────────────────
+    userInput.focus();
 });
